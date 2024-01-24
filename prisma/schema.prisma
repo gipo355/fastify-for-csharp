@@ -15,5 +15,5 @@ model User {
   email     String    @unique
   password  String
   token     String?
-  updatedAt DateTime? @updatedAt
+  updatedAt DateTime?
 }

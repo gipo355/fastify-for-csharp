@@ -21,14 +21,13 @@ const root: FastifyPluginAsync = async (fastify): Promise<void> => {
         throw new Error("Invalid email or password");
       }
 
-      const tokeh = uuidv4();
-
       await prisma.user.update({
         where: {
           id: user.id,
         },
         data: {
-          tokeh,
+          token: uuidv4(),
+          updatedAt: new Date(),
         },
       });
 
