@@ -1,12 +1,21 @@
 import { FastifyPluginAsync } from "fastify";
 
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get<{ Body: { username: string; password: string } }>(
-    "/",
-    async function (request, reply) {
-      const { username, password } = request.body;
+import { prisma } from "../../prisma.js";
 
-      return { root: true };
+const root: FastifyPluginAsync = async (fastify): Promise<void> => {
+  fastify.post<{ Body: { email: string; password: string } }>(
+    "/",
+    async function (request) {
+      const { email, password } = request.body;
+
+      const newUser = prisma.user.create({
+        data: {
+          email,
+          password,
+        },
+      });
+
+      return newUser;
     },
   );
 };

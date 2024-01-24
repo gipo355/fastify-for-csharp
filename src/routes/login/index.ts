@@ -2,15 +2,37 @@ import { FastifyPluginAsync } from "fastify";
 
 import { v4 as uuidv4 } from "uuid";
 
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get<{ Body: { username: string; password: string } }>(
+import { prisma } from "../../prisma.js";
+
+const root: FastifyPluginAsync = async (fastify): Promise<void> => {
+  fastify.post<{ Body: { email: string; password: string } }>(
     "/",
-    async function (request, reply) {
-      const { username, password } = request.body;
+    async function (request) {
+      const { email, password } = request.body;
 
-      const token = uuidv4();
+      const user = await prisma.user.findUnique({
+        where: {
+          email,
+          password,
+        },
+      });
 
-      return { root: true };
+      if (!user) {
+        throw new Error("Invalid email or password");
+      }
+
+      const tokeh = uuidv4();
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          tokeh,
+        },
+      });
+
+      return user;
     },
   );
 };
