@@ -1,11 +1,18 @@
 import { FastifyPluginAsync } from "fastify";
 
-const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.get("/", async function (request, reply) {
-    const { username, password } = request.body;
+import { v4 as uuidv4 } from "uuid";
 
-    return { root: true };
-  });
+const root: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
+  fastify.get<{ Body: { username: string; password: string } }>(
+    "/",
+    async function (request, reply) {
+      const { username, password } = request.body;
+
+      const token = uuidv4();
+
+      return { root: true };
+    },
+  );
 };
 
 export default root;
